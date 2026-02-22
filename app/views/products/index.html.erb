@@ -1,0 +1,41 @@
+<div class="mx-auto max-w-6xl px-6 py-10">
+  <div class="mb-8 flex items-center justify-between">
+    <h1 class="text-2xl font-bold text-slate-900">商品一覧</h1>
+    <%= link_to "商品を登録する", new_product_path, class: "inline-flex items-center rounded-md bg-sky-700 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-300" %>
+  </div>
+
+  <% if @products.empty? %>
+    <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-sm text-slate-600">
+      商品がまだ登録されていません。
+    </div>
+  <% else %>
+    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+      <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+        <thead class="bg-slate-50 text-slate-700">
+          <tr>
+            <th class="px-4 py-3 font-semibold">ID</th>
+            <th class="px-4 py-3 font-semibold">商品名</th>
+            <th class="px-4 py-3 font-semibold">種類</th>
+            <th class="px-4 py-3 font-semibold">入荷日</th>
+            <th class="px-4 py-3 font-semibold">備考</th>
+            <th class="px-4 py-3 font-semibold">作成日時</th>
+            <th class="px-4 py-3 font-semibold">更新日時</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 text-slate-800">
+          <% @products.each do |product| %>
+            <tr>
+              <td class="px-4 py-3"><%= product.id %></td>
+              <td class="px-4 py-3"><%= product.name %></td>
+              <td class="px-4 py-3"><%= "#{product.kind}(#{product.kind_before_type_cast})" %></td>
+              <td class="px-4 py-3"><%= product.arrival_date %></td>
+              <td class="px-4 py-3"><%= product.note %></td>
+              <td class="px-4 py-3"><%= product.created_at.in_time_zone("Tokyo").strftime("%Y-%m-%d %H:%M:%S %z") %></td>
+              <td class="px-4 py-3"><%= product.updated_at.in_time_zone("Tokyo").strftime("%Y-%m-%d %H:%M:%S %z") %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</div>

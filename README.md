@@ -1,24 +1,23 @@
-# README
+# Product Management App (Rails)
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Prerequisites
+- Ruby and Node are managed by `mise` in this project.
+- Install dependencies:
+  - `bundle install`
 
-Things you may want to cover:
+## Run the app
+- `bin/rails s`
 
-* Ruby version
+## Quality Gate (Definition of Done)
+Code is considered complete only when both checks pass:
+1. `bundle exec rubocop`
+2. `bundle exec rspec`
 
-* System dependencies
+If either command fails, the work is not complete.
 
-* Configuration
+## CI
+- Run all project checks with:
+  - `bin/ci`
 
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+In restricted environments where RuboCop cache cannot be written to home:
+- `XDG_CACHE_HOME=tmp/.cache bundle exec rubocop`

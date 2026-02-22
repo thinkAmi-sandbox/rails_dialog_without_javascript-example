@@ -1,1 +1,44 @@
-plugins: rubocop-rails
+plugins:
+  - rubocop-rails
+
+inherit_mode:
+  merge:
+    - Exclude
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.4
+  SuggestExtensions: false
+  Exclude:
+    - 'vendor/**/*'
+    - 'node_modules/**/*'
+    - 'tmp/**/*'
+    - '.git/**/*'
+    - 'bin/*'
+    - 'db/schema.rb'
+    - 'config/boot.rb'
+    - 'config/environment.rb'
+    - 'config/environments/*.rb'
+    - 'config/initializers/*.rb'
+    - 'config/puma.rb'
+    - 'config.ru'
+    - 'Rakefile'
+    - 'spec/spec_helper.rb'
+    - 'spec/rails_helper.rb'
+    - 'test/**/*'
+
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/StringLiterals:
+  Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/requests/**/*_spec.rb'
+
+Layout/LineLength:
+  Max: 120
