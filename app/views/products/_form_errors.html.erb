@@ -1,0 +1,10 @@
+<% if product.errors.any? %>
+  <div class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
+    <p class="mb-2 text-sm font-semibold text-red-800">入力内容を確認してください</p>
+    <ul class="list-inside list-disc text-sm text-red-700">
+      <% product.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
