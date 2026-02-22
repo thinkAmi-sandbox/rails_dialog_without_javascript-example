@@ -14,6 +14,13 @@ class ProductsController < ApplicationController
     render :index
   end
 
+  def delete_confirm
+    prepare_index_state
+    @delete_product = Product.find(params[:id])
+    @open_delete_dialog = true
+    render :index
+  end
+
   def create
     @new_product = Product.new(product_params)
     return redirect_to(products_path) if @new_product.save
@@ -37,6 +44,12 @@ class ProductsController < ApplicationController
       @open_edit_dialog = true
       render :index, status: :unprocessable_content
     end
+  end
+
+  def destroy
+    product = Product.find(params[:id])
+    product.destroy
+    redirect_to products_path
   end
 
   private

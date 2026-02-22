@@ -20,7 +20,9 @@ RSpec.describe "Products", type: :request do
       expect(response.body).to include("command=\"close\"")
       expect(response.body).to include("formmethod=\"dialog\"")
       expect(response.body).to include(edit_product_path(product))
+      expect(response.body).to include(delete_confirm_product_path(product))
       expect(response.body).to include("id=\"edit-product-dialog\"")
+      expect(response.body).to include("id=\"delete-product-dialog\"")
       expect(response.body).to include(new_product_path)
     end
 
@@ -78,6 +80,26 @@ RSpec.describe "Products", type: :request do
       expect(response.body).to include(">×</span>")
       expect(response.body).not_to match(%r{>一覧へ戻る</a>})
       expect(response.body).not_to match(/id="edit-product-dialog"[^>]*command="close"/)
+    end
+  end
+
+  describe "GET /products/:id/delete_confirm" do
+    it "renders index with opened delete dialog and confirmation actions" do
+      product = Product.create!(
+        name: "削除対象",
+        kind: :food,
+        arrival_date: Date.new(2026, 2, 24),
+        note: "確認"
+      )
+
+      get delete_confirm_product_path(product)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to match(/<dialog[^>]*id="delete-product-dialog"[^>]*open/)
+      expect(response.body).to include("削除してよいですか？")
+      expect(response.body).to match(%r{<a[^>]*href="/products"[^>]*>キャンセル</a>})
+      expect(response.body).to include("action=\"#{product_path(product)}\"")
+      expect(response.body).to include("name=\"_method\" value=\"delete\"")
     end
   end
 
@@ -194,6 +216,26 @@ RSpec.describe "Products", type: :request do
       expect(response.body).to match(/<dialog[^>]*id="edit-product-dialog"[^>]*open/)
       expect(response.body).to include("入力内容を確認してください")
       expect(response.body).to include("商品名")
+    end
+  end
+
+  describe "DELETE /products/:id" do
+    it "destroys a product and redirects to index" do
+      product = Product.create!(
+        name: "削除される商品",
+        kind: :miscellaneous,
+        arrival_date: Date.new(2026, 2, 25),
+        note: "削除確認"
+      )
+
+      expect do
+        delete product_path(product)
+      end.to change(Product, :count).by(-1)
+
+      expect(response).to redirect_to(products_path)
+      follow_redirect!
+      expect(response).to have_http_status(:ok)
+      expect(response.body).not_to include("削除される商品")
     end
   end
 end
