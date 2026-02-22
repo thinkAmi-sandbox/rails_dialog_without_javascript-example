@@ -23,12 +23,11 @@
 
     <div class="space-y-3">
       <p class="text-sm font-semibold text-slate-800">種類</p>
-      <% kind_labels = { "food" => "食品", "miscellaneous" => "雑貨", "book" => "書籍" } %>
       <div class="space-y-2">
         <% Product.kinds.keys.each do |kind| %>
           <label class="flex cursor-pointer items-center gap-2 rounded-md border border-slate-200 px-3 py-2 hover:bg-slate-50">
             <%= f.radio_button :kind, kind, required: true, class: "h-4 w-4 border-slate-300 text-sky-600 focus:ring-sky-500" %>
-            <span class="text-sm text-slate-800"><%= kind_labels.fetch(kind) %></span>
+            <span class="text-sm text-slate-800"><%= Product::KIND_LABELS.fetch(kind) %></span>
           </label>
         <% end %>
       </div>

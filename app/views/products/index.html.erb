@@ -27,7 +27,7 @@
             <tr>
               <td class="px-4 py-3"><%= product.id %></td>
               <td class="px-4 py-3"><%= product.name %></td>
-              <td class="px-4 py-3"><%= "#{product.kind}(#{product.kind_before_type_cast})" %></td>
+              <td class="px-4 py-3"><%= product.kind_label %></td>
               <td class="px-4 py-3"><%= product.arrival_date %></td>
               <td class="px-4 py-3"><%= product.note %></td>
               <td class="px-4 py-3"><%= product.created_at.in_time_zone("Tokyo").strftime("%Y-%m-%d %H:%M:%S %z") %></td>

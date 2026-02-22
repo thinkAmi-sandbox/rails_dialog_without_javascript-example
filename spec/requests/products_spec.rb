@@ -23,7 +23,7 @@ RSpec.describe "Products", type: :request do
       expect(response).to have_http_status(:ok)
       expect(response.body).to include(product.id.to_s)
       expect(response.body).to include(product.name)
-      expect(response.body).to include("#{product.kind}(#{product.kind_before_type_cast})")
+      expect(response.body).to include(product.kind_label)
       expect(response.body).to include(product.arrival_date.to_s)
       expect(response.body).to include(product.note.to_s)
       expect(response.body).to include(product.created_at.in_time_zone("Tokyo").strftime("%Y-%m-%d %H:%M:%S %z"))
