@@ -9,7 +9,7 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
-  resources :products, only: %i[index new create edit update destroy] do
+  resources :products, only: %i[index create edit update destroy] do
     member do
       get :delete_confirm
     end

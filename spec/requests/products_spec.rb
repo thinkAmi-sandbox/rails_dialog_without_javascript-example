@@ -23,7 +23,7 @@ RSpec.describe "Products", type: :request do
       expect(response.body).to include(delete_confirm_product_path(product))
       expect(response.body).to include("id=\"edit-product-dialog\"")
       expect(response.body).to include("id=\"delete-product-dialog\"")
-      expect(response.body).to include(new_product_path)
+      expect(response.body).not_to include("別ページで登録")
     end
 
     it "shows all product attributes in index" do
@@ -44,16 +44,6 @@ RSpec.describe "Products", type: :request do
       expect(response.body).to include(product.note.to_s)
       expect(response.body).to include(product.created_at.in_time_zone("Tokyo").strftime("%Y-%m-%d %H:%M:%S %z"))
       expect(response.body).to include(product.updated_at.in_time_zone("Tokyo").strftime("%Y-%m-%d %H:%M:%S %z"))
-    end
-  end
-
-  describe "GET /products/new" do
-    it "returns a successful response and sets today as default arrival date" do
-      get new_product_path
-
-      expect(response).to have_http_status(:ok)
-      expect(response.body).to include("商品登録")
-      expect(response.body).to include(%(value="#{Time.zone.today}"))
     end
   end
 
@@ -117,7 +107,7 @@ RSpec.describe "Products", type: :request do
 
     it "creates a product and redirects to index" do
       expect do
-        post products_path, params: valid_params.merge(form_source: "index_dialog")
+        post products_path, params: valid_params
       end.to change(Product, :count).by(1)
 
       expect(response).to redirect_to(products_path)
@@ -131,7 +121,7 @@ RSpec.describe "Products", type: :request do
       invalid_params[:product][:name] = ""
 
       expect do
-        post products_path, params: invalid_params.merge(form_source: "index_dialog")
+        post products_path, params: invalid_params
       end.not_to change(Product, :count)
 
       expect(response).to have_http_status(:unprocessable_content)
@@ -145,7 +135,7 @@ RSpec.describe "Products", type: :request do
       invalid_params[:product][:kind] = ""
 
       expect do
-        post products_path, params: invalid_params.merge(form_source: "index_dialog")
+        post products_path, params: invalid_params
       end.not_to change(Product, :count)
 
       expect(response).to have_http_status(:unprocessable_content)
@@ -159,7 +149,7 @@ RSpec.describe "Products", type: :request do
       invalid_params[:product][:arrival_date] = ""
 
       expect do
-        post products_path, params: invalid_params.merge(form_source: "index_dialog")
+        post products_path, params: invalid_params
       end.not_to change(Product, :count)
 
       expect(response).to have_http_status(:unprocessable_content)
@@ -191,7 +181,7 @@ RSpec.describe "Products", type: :request do
     end
 
     it "updates a product and redirects to index" do
-      patch product_path(product), params: valid_params.merge(form_source: "edit_dialog")
+      patch product_path(product), params: valid_params
 
       expect(response).to redirect_to(products_path)
       product.reload
@@ -210,7 +200,7 @@ RSpec.describe "Products", type: :request do
       invalid_params = valid_params.deep_dup
       invalid_params[:product][:name] = ""
 
-      patch product_path(product), params: invalid_params.merge(form_source: "edit_dialog")
+      patch product_path(product), params: invalid_params
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(response.body).to match(/<dialog[^>]*id="edit-product-dialog"[^>]*open/)

@@ -1,12 +1,9 @@
 <div class="mx-auto max-w-6xl px-6 py-10">
   <div class="mb-8 flex items-center justify-between">
     <h1 class="text-2xl font-bold text-slate-900">商品一覧</h1>
-    <div class="flex items-center gap-3">
-      <button type="button" commandfor="new-product-dialog" command="show-modal" class="inline-flex items-center rounded-md bg-sky-700 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-300">
-        商品を追加する
-      </button>
-      <%= link_to "別ページで登録", new_product_path, class: "text-sm font-medium text-sky-700 hover:text-sky-900" %>
-    </div>
+    <button type="button" commandfor="new-product-dialog" command="show-modal" class="inline-flex items-center rounded-md bg-sky-700 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-300">
+      商品を追加する
+    </button>
   </div>
 
   <dialog id="new-product-dialog" aria-labelledby="new-product-dialog-title" aria-describedby="new-product-dialog-description" closedby="any" class="pointer-events-none invisible m-auto w-[calc(100vw-2rem)] max-w-2xl rounded-xl border border-slate-200 bg-white p-0 text-slate-900 shadow-2xl backdrop:bg-slate-900/40 backdrop:backdrop-blur-[1px] open:pointer-events-auto open:visible" <%= "open" if @open_new_product_dialog %>>
@@ -25,7 +22,6 @@
         <%= render "form_errors", product: @new_product %>
 
         <%= form_with model: @new_product, url: products_path, class: "space-y-6" do |f| %>
-          <%= hidden_field_tag :form_source, "index_dialog" %>
           <%= render "form_fields", f: f %>
 
           <div class="flex items-center justify-end gap-3 border-t border-slate-200 pt-4">
@@ -103,7 +99,6 @@
             <%= render "form_errors", product: @edit_product %>
 
             <%= form_with model: @edit_product, url: product_path(@edit_product), method: :patch, class: "space-y-6" do |f| %>
-              <%= hidden_field_tag :form_source, "edit_dialog" %>
               <%= render "form_fields", f: f %>
 
               <div class="flex items-center justify-end gap-3 border-t border-slate-200 pt-4">

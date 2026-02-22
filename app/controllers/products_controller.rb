@@ -3,10 +3,6 @@ class ProductsController < ApplicationController
     prepare_index_state
   end
 
-  def new
-    @product = Product.new(arrival_date: Time.zone.today)
-  end
-
   def edit
     prepare_index_state
     @edit_product = Product.find(params[:id])
@@ -24,11 +20,6 @@ class ProductsController < ApplicationController
   def create
     @new_product = Product.new(product_params)
     return redirect_to(products_path) if @new_product.save
-
-    if form_source != "index_dialog"
-      @product = @new_product
-      return render :new, status: :unprocessable_content
-    end
 
     prepare_index_state
     @open_new_product_dialog = true
@@ -61,9 +52,5 @@ class ProductsController < ApplicationController
   def prepare_index_state
     @products = Product.order(created_at: :desc)
     @new_product = Product.new(arrival_date: Time.zone.today) unless defined?(@new_product)
-  end
-
-  def form_source
-    params[:form_source]
   end
 end
