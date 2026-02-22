@@ -3,6 +3,13 @@ require "rails_helper"
 RSpec.describe "Products", type: :request do
   describe "GET /products" do
     it "returns a successful response and includes a dialog trigger" do
+      product = Product.create!(
+        name: "みかん",
+        kind: :food,
+        arrival_date: Date.new(2026, 2, 23),
+        note: "愛媛"
+      )
+
       get products_path
 
       expect(response).to have_http_status(:ok)
@@ -12,6 +19,8 @@ RSpec.describe "Products", type: :request do
       expect(response.body).to include("id=\"new-product-dialog\"")
       expect(response.body).to include("command=\"close\"")
       expect(response.body).to include("formmethod=\"dialog\"")
+      expect(response.body).to include(edit_product_path(product))
+      expect(response.body).to include("id=\"edit-product-dialog\"")
       expect(response.body).to include(new_product_path)
     end
 
@@ -43,6 +52,32 @@ RSpec.describe "Products", type: :request do
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("商品登録")
       expect(response.body).to include(%(value="#{Time.zone.today}"))
+    end
+  end
+
+  describe "GET /products/:id/edit" do
+    it "renders index with opened edit dialog and product values" do
+      product = Product.create!(
+        name: "Railsガイド",
+        kind: :book,
+        arrival_date: Date.new(2026, 2, 24),
+        note: "第2版"
+      )
+
+      get edit_product_path(product)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to match(/<dialog[^>]*id="edit-product-dialog"[^>]*open/)
+      expect(response.body).to match(/id="edit-product-dialog"[^>]*class="[^"]*fixed[^"]*inset-0[^"]*z-50/)
+      expect(response.body).to include(product.name)
+      expect(response.body).to include(%(value="#{product.arrival_date}"))
+      expect(response.body).to include(product.note)
+      expect(response.body).to match(%r{<a[^>]*href="/products"[^>]*>キャンセル</a>})
+      expect(response.body).to include("aria-label=\"背景をクリックして一覧へ戻る\"")
+      expect(response.body).to include("aria-label=\"一覧へ戻る\"")
+      expect(response.body).to include(">×</span>")
+      expect(response.body).not_to match(%r{>一覧へ戻る</a>})
+      expect(response.body).not_to match(/id="edit-product-dialog"[^>]*command="close"/)
     end
   end
 
@@ -109,6 +144,56 @@ RSpec.describe "Products", type: :request do
       expect(response.body).to match(/<dialog[^>]*id="new-product-dialog"[^>]*open/)
       expect(response.body).to include("入力内容を確認してください")
       expect(response.body).to include("入荷日")
+    end
+  end
+
+  describe "PATCH /products/:id" do
+    let!(:product) do
+      Product.create!(
+        name: "旧商品名",
+        kind: :food,
+        arrival_date: Date.new(2026, 2, 25),
+        note: "旧備考"
+      )
+    end
+
+    let(:valid_params) do
+      {
+        product: {
+          name: "新商品名",
+          kind: "book",
+          arrival_date: "2026-02-26",
+          note: "新備考"
+        }
+      }
+    end
+
+    it "updates a product and redirects to index" do
+      patch product_path(product), params: valid_params.merge(form_source: "edit_dialog")
+
+      expect(response).to redirect_to(products_path)
+      product.reload
+      expect(product.name).to eq("新商品名")
+      expect(product.kind).to eq("book")
+      expect(product.arrival_date).to eq(Date.new(2026, 2, 26))
+      expect(product.note).to eq("新備考")
+
+      follow_redirect!
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("新商品名")
+      expect(response.body).to include("書籍")
+    end
+
+    it "returns 422 and keeps edit dialog opened when invalid" do
+      invalid_params = valid_params.deep_dup
+      invalid_params[:product][:name] = ""
+
+      patch product_path(product), params: invalid_params.merge(form_source: "edit_dialog")
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to match(/<dialog[^>]*id="edit-product-dialog"[^>]*open/)
+      expect(response.body).to include("入力内容を確認してください")
+      expect(response.body).to include("商品名")
     end
   end
 end
