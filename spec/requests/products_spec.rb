@@ -2,11 +2,16 @@ require "rails_helper"
 
 RSpec.describe "Products", type: :request do
   describe "GET /products" do
-    it "returns a successful response and includes a link to new product" do
+    it "returns a successful response and includes a dialog trigger" do
       get products_path
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("商品一覧")
+      expect(response.body).to include("commandfor=\"new-product-dialog\"")
+      expect(response.body).to include("command=\"show-modal\"")
+      expect(response.body).to include("id=\"new-product-dialog\"")
+      expect(response.body).to include("command=\"close\"")
+      expect(response.body).to include("formmethod=\"dialog\"")
       expect(response.body).to include(new_product_path)
     end
 
@@ -55,7 +60,7 @@ RSpec.describe "Products", type: :request do
 
     it "creates a product and redirects to index" do
       expect do
-        post products_path, params: valid_params
+        post products_path, params: valid_params.merge(form_source: "index_dialog")
       end.to change(Product, :count).by(1)
 
       expect(response).to redirect_to(products_path)
@@ -69,10 +74,12 @@ RSpec.describe "Products", type: :request do
       invalid_params[:product][:name] = ""
 
       expect do
-        post products_path, params: invalid_params
+        post products_path, params: invalid_params.merge(form_source: "index_dialog")
       end.not_to change(Product, :count)
 
       expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to match(/<dialog[^>]*id="new-product-dialog"[^>]*open/)
+      expect(response.body).to include("入力内容を確認してください")
       expect(response.body).to include("商品名")
     end
 
@@ -81,10 +88,12 @@ RSpec.describe "Products", type: :request do
       invalid_params[:product][:kind] = ""
 
       expect do
-        post products_path, params: invalid_params
+        post products_path, params: invalid_params.merge(form_source: "index_dialog")
       end.not_to change(Product, :count)
 
       expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to match(/<dialog[^>]*id="new-product-dialog"[^>]*open/)
+      expect(response.body).to include("入力内容を確認してください")
       expect(response.body).to include("種類")
     end
 
@@ -93,10 +102,12 @@ RSpec.describe "Products", type: :request do
       invalid_params[:product][:arrival_date] = ""
 
       expect do
-        post products_path, params: invalid_params
+        post products_path, params: invalid_params.merge(form_source: "index_dialog")
       end.not_to change(Product, :count)
 
       expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to match(/<dialog[^>]*id="new-product-dialog"[^>]*open/)
+      expect(response.body).to include("入力内容を確認してください")
       expect(response.body).to include("入荷日")
     end
   end
